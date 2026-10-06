@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { NAV } from '../consts';
+import Sidebar from './Sidebar.astro';
 import logo from '../assets/logo-steik.png';
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
@@ -9,17 +10,30 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 
 <header
   id="site-nav"
-  class="animate-nav-in sticky top-0 z-50 bg-white text-black shadow-sm transition-colors duration-300"
+  class="sticky top-0 z-50 bg-white text-black shadow-sm transition-colors duration-300"
 >
   <nav class="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-4 sm:px-9 sm:py-6">
-    <ul class="flex gap-4 overflow-x-auto whitespace-nowrap text-sm sm:gap-8 sm:text-2xl">
+    <button
+      id="nav-menu-toggle"
+      type="button"
+      aria-label="Buka menu"
+      aria-expanded="false"
+      aria-controls="mobile-sidebar"
+      class="grid size-11 shrink-0 place-items-center rounded-full border border-neutral-200 transition hover:border-brand hover:text-brand sm:hidden"
+    >
+      <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16" />
+      </svg>
+    </button>
+<ul class="hidden items-center gap-4 overflow-x-auto whitespace-nowrap text-sm sm:flex sm:gap-8 sm:text-2xl">
       {NAV.map(({ href, label }) => (
-        <li>
-          <a
-            href={href}
-            aria-current={isActive(href) ? 'page' : undefined}
-            class="decoration-2 underline-offset-8 hover:underline aria-[current=page]:underline"
-          >
+        <li
+          class:list={[
+            'decoration-2 underline-offset-8 hover:underline',
+            isActive(href) && 'font-bold text-brand underline decoration-brand',
+          ]}
+        >
+          <a href={href} aria-current={isActive(href) ? 'page' : undefined}>
             {label}
           </a>
         </li>
@@ -31,17 +45,33 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   </nav>
 </header>
 
+<Sidebar />
+
 <script>
   // Turn the navbar purple once the user scrolls, white again at the top.
   const nav = document.getElementById('site-nav');
   if (nav) {
     const update = () => {
-      if (window.scrollY > 16) {
+      const scrolled = window.scrollY > 16;
+      if (scrolled) {
         nav.classList.add('bg-brand', 'text-white');
         nav.classList.remove('bg-white', 'text-black');
       } else {
         nav.classList.remove('bg-brand', 'text-white');
         nav.classList.add('bg-white', 'text-black');
+      }
+      // Keep the active (current page) link readable in both navbar states:
+      // purple underline + bold text on the white navbar, white when the
+      // navbar itself turns purple.
+      const activeLink = nav.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
+      const active = activeLink?.parentElement ?? null;
+      if (!active) return;
+      if (scrolled) {
+        active.classList.add('text-white', 'decoration-white');
+        active.classList.remove('text-brand', 'decoration-brand');
+      } else {
+        active.classList.add('text-brand', 'decoration-brand');
+        active.classList.remove('text-white', 'decoration-white');
       }
     };
     update();

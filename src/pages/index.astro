@@ -20,16 +20,20 @@ const LOREM =
   <section class="relative overflow-hidden">
     <div class="grid-lines absolute inset-0" aria-hidden="true"></div>
     <div class="relative mx-auto flex min-h-[60vh] max-w-[1440px] flex-col items-center justify-center px-4 py-24 sm:min-h-[900px]">
-      <img src="/icons/computer-blue.svg" alt="" width="68" height="75" class="animate-float absolute top-[18%] right-[10%] w-10 rotate-[12deg] sm:top-[24%] sm:right-[22%] sm:w-[88px]" style="animation-delay: -2s" />
+      <img src="/icons/computer-blue.svg" alt="" width="68" height="75" class="animate-float absolute top-[22%] right-[10%] w-10 rotate-[12deg] sm:top-[24%] sm:right-[22%] sm:w-[88px]" style="animation-delay: -2s" />
       <img src="/icons/keyboard-blue.svg" alt="" width="93" height="93" class="animate-float-slow absolute top-[52%] left-[4%] w-14 sm:left-[10%] sm:w-24" style="animation-delay: -4.5s" />
       <h1 class="text-center leading-[0.85]">
         <span class="block text-[clamp(3rem,10vw,9.5rem)] font-normal" data-reveal="up" style="--reveal-delay: 80ms">Welcome to</span>{' '}
         <span class="text-script block pl-[10%] text-[clamp(3rem,10vw,9.5rem)]" data-reveal="up" style="--reveal-delay: 220ms">Rise Camp</span>
       </h1>
-      <p class="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-base italic sm:text-2xl" data-reveal="fade" style="--reveal-delay: 420ms">
+      <p class="mt-6 grid grid-cols-[auto_auto_auto] items-center justify-center justify-items-center gap-x-4 gap-y-1 text-base italic sm:flex sm:flex-wrap sm:justify-center sm:gap-x-4 sm:text-2xl" data-reveal="fade" style="--reveal-delay: 420ms">
         {VALUES.map((value, i) => (
           <>
-            {i > 0 && <span aria-hidden="true" class="text-xs not-italic">◆</span>}
+            {i > 0 && (
+              <span aria-hidden="true" class:list={['text-xs not-italic', i === 2 && 'hidden sm:inline']}>
+                ◆
+              </span>
+            )}
             <span>{value}</span>
           </>
         ))}

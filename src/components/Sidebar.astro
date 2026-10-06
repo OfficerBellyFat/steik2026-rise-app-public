@@ -1,0 +1,95 @@
+---
+import { Image } from 'astro:assets';
+import { NAV } from '../consts';
+import logo from '../assets/logo-steik.png';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<!-- Collapsible sidebar for phones (hidden by default, slides in from the left).
+     Fixed siblings of the header so they stay viewport-relative (the header's
+     entrance animation would otherwise trap `fixed` descendants). -->
+<div
+  id="mobile-sidebar-backdrop"
+  class="pointer-events-none fixed inset-0 z-60 bg-black/40 opacity-0 transition-opacity duration-300"
+  aria-hidden="true"
+  data-sidebar-close
+></div>
+<aside
+  id="mobile-sidebar"
+  class="fixed inset-y-0 left-0 z-70 flex w-80 max-w-[85vw] -translate-x-full flex-col bg-white p-6 shadow-2xl transition-transform duration-300"
+  aria-label="Menu utama"
+  aria-hidden="true"
+  inert
+>
+  <div class="flex items-center justify-between gap-4">
+    <a href="/" class="shrink-0" aria-label="STEI-K — beranda">
+      <Image src={logo} alt="STEIK" height={40} class="h-8 w-auto" />
+    </a>
+    <button
+      id="nav-menu-close"
+      type="button"
+      aria-label="Tutup menu"
+      class="grid size-10 shrink-0 place-items-center rounded-full border border-neutral-200 text-black transition hover:border-brand hover:text-brand"
+      data-sidebar-close
+    >
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" />
+      </svg>
+    </button>
+  </div>
+
+  <nav class="mt-10">
+    <ul class="space-y-2">
+      {NAV.map(({ href, label }) => (
+        <li>
+          <a
+            href={href}
+            aria-current={isActive(href) ? 'page' : undefined}
+            class:list={[
+              'block text-2xl decoration-2 underline-offset-8 hover:underline',
+              isActive(href) && 'font-bold text-brand underline decoration-brand',
+            ]}
+            data-sidebar-close
+          >
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</aside>
+
+<script>
+  const panel = document.getElementById('mobile-sidebar');
+  const backdrop = document.getElementById('mobile-sidebar-backdrop');
+  const toggle = document.getElementById('nav-menu-toggle');
+  const closers = document.querySelectorAll<HTMLElement>('[data-sidebar-close]');
+
+  const openSidebar = () => {
+    if (!panel || !backdrop) return;
+    panel.classList.remove('-translate-x-full');
+    backdrop.classList.remove('opacity-0', 'pointer-events-none');
+    panel.setAttribute('aria-hidden', 'false');
+    panel.removeAttribute('inert');
+    toggle?.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('overflow-hidden');
+  };
+
+  const closeSidebar = () => {
+    if (!panel || !backdrop) return;
+    panel.classList.add('-translate-x-full');
+    backdrop.classList.add('opacity-0', 'pointer-events-none');
+    panel.setAttribute('aria-hidden', 'true');
+    panel.setAttribute('inert', '');
+    toggle?.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('overflow-hidden');
+  };
+
+  toggle?.addEventListener('click', openSidebar);
+  closers.forEach((el) => el.addEventListener('click', closeSidebar));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSidebar();
+  });
+</script>
