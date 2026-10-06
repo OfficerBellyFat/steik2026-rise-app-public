@@ -1,0 +1,169 @@
+@import "@fontsource-variable/dm-sans/wght.css";
+@import "@fontsource-variable/dm-sans/wght-italic.css";
+@import "@fontsource/pixelify-sans/400.css";
+@import "@fontsource/pixelify-sans/700.css";
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Colors sampled from the Figma export in design/. */
+@theme {
+  --font-sans: "DM Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-pixel: "Pixelify Sans", ui-monospace, monospace;
+  /* Stand-in until the pixel-script font used for "Rise Camp" is supplied. */
+  --font-script: "DM Sans Variable", ui-serif, serif;
+
+  --color-brand: #5563e1;
+  --color-brand-deep: #424fc0;
+  --color-brand-light: #83a0ee;
+  --color-brand-soft: #d7e4fa;
+  --color-brand-tint: #dbdef9;
+
+  --color-yellow: #ffbb00;
+  --color-teal: #20d9a5;
+
+  --color-tag-blue: #7782e7;
+  --color-tag-orange: #e8a76f;
+  --color-tag-pink: #e15a76;
+
+  --color-key-r: #2a36a0;
+  --color-key-i: #ff9702;
+  --color-key-s: #ef5675;
+  --color-key-e: #62b344;
+
+  --color-program-tka: #5862ba;
+  --color-program-utbk: #3677e8;
+
+  --color-placeholder: #d9d9d9;
+  --color-gridline: #cfcfcf;
+
+  --shadow-hard: 8px 8px 0 0 #000;
+  --shadow-hard-sm: 6px 6px 0 0 #000;
+}
+
+@utility text-script {
+  font-family: var(--font-script);
+  /* Remove once the real script font is in place. */
+  font-style: italic;
+}
+
+@utility grid-lines {
+  background-image:
+    linear-gradient(to right, var(--color-gridline) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-gridline) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, #000 80%, transparent);
+}
+
+@utility bg-fade-down {
+  background-image: linear-gradient(to bottom, var(--color-brand) 0%, var(--color-brand-tint) 60%, #fff 100%);
+}
+
+/* ============================================================
+   Motion — entrance reveals, floating decorations, micro-UI
+   Hidden states only ever apply when `.js` is present on <html>
+   (added inline in BaseLayout), so content stays visible as a
+   safe fallback if scripting is disabled.
+   ============================================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Keyframes --- */
+@keyframes rise-up {
+  from { opacity: 0; transform: translateY(26px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes rise-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes rise-float {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -14px; }
+}
+@keyframes rise-float-x {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 10px 0; }
+}
+@keyframes rise-sway {
+  0%, 100% { translate: 0 0; rotate: -2.5deg; }
+  50%      { translate: 0 -9px; rotate: 2.5deg; }
+}
+@keyframes rise-nav-in {
+  from { opacity: 0; translate: 0 -100%; }
+  to   { opacity: 1; translate: 0 0; }
+}
+@keyframes rise-page-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes rise-placeholder {
+  0%, 100% { background-color: var(--color-placeholder); }
+  50%      { background-color: #c3cfe9; }
+}
+@keyframes rise-detail-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes rise-bounce {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -6px; }
+}
+
+/* --- Entry on page load --- */
+.animate-page-in { animation: rise-fade 0.45s ease both; }
+.animate-nav-in  { animation: rise-nav-in 0.5s ease both; }
+
+/* --- Entrance on scroll: elements appear when scrolled into view --- */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+html.js [data-reveal='fade']  { transform: none; }
+html.js [data-reveal='left']  { transform: translateX(-32px); }
+html.js [data-reveal='right'] { transform: translateX(32px); }
+html.js [data-reveal='scale'] { transform: scale(0.92) translateY(8px); }
+html.js [data-reveal].is-revealed { opacity: 1; transform: none; }
+
+/* --- Decorative floating icons --- */
+.animate-float      { animation: rise-float 6s ease-in-out infinite; }
+.animate-float-slow { animation: rise-float 9s ease-in-out infinite; }
+.animate-float-x    { animation: rise-float-x 7s ease-in-out infinite; }
+.animate-sway       { animation: rise-sway 8s ease-in-out infinite; }
+.animate-bounce     { animation: rise-bounce 2.4s ease-in-out infinite; }
+
+/* --- Micro-interactions --- */
+details > :not(summary) { animation: none; }
+details[open] > :not(summary) {
+  animation: rise-detail-in 0.35s ease both;
+  animation-delay: 0.05s;
+}
+.animate-placeholder {
+  animation: rise-placeholder 3.2s ease-in-out infinite;
+}
+
+/* --- Respect reduced-motion preferences --- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  html.js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .animate-float,
+  .animate-float-slow,
+  .animate-float-x,
+  .animate-sway,
+  .animate-bounce,
+  .animate-placeholder,
+  .animate-page-in,
+  .animate-nav-in {
+    animation: none !important;
+  }
+  details > :not(summary) { animation: none !important; }
+}

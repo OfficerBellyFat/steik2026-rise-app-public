@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { QNA_FORM_URL } from '../consts';
+import { QNA } from '../data/qna';
+
+const unanswered = QNA.filter((item) => !item.answer);
+const answered = QNA.filter((item) => item.answer);
+const card = 'bg-brand-soft px-6 py-8 shadow-hard sm:px-14 sm:text-2xl';
+---
+
+<BaseLayout title="QnA">
+  <section class="bg-linear-to-b from-brand via-brand-tint to-white">
+    <div class="mx-auto max-w-[1440px] px-4 pt-24 pb-8 sm:px-14 sm:pt-32">
+      <h1 class="flex items-center gap-4 font-pixel text-6xl sm:text-8xl" data-reveal="fade">
+        <img src="/icons/mailbox.svg" alt="" width="123" height="117" class="animate-float w-16 sm:w-[123px]" style="animation-delay: -1.5s" />
+        QnA
+      </h1>
+      {QNA_FORM_URL ? (
+        <a
+          href={QNA_FORM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-20 block bg-brand-light px-6 py-3 text-2xl shadow-hard transition hover:translate-x-0.5 hover:translate-y-0.5 sm:px-16 sm:text-4xl"
+          data-reveal="up"
+          style="--reveal-delay: 150ms"
+        >
+          + Tambah Pertanyaan
+        </a>
+      ) : (
+        <p class="mt-20 block bg-brand-light/60 px-6 py-3 text-2xl text-black/60 shadow-hard sm:px-16 sm:text-4xl" data-reveal="up" style="--reveal-delay: 150ms">
+          + Tambah Pertanyaan <span class="text-base">(segera hadir)</span>
+        </p>
+      )}
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-[1440px] space-y-16 px-4 pb-16 sm:px-14">
+    <section class="space-y-10" data-reveal-group>
+      <h2 class="text-3xl sm:text-5xl">Belum dijawab ({unanswered.length})</h2>
+      {unanswered.map((item) => <p class={card} data-reveal="up">{item.question}</p>)}
+    </section>
+
+    <section class="space-y-10">
+      <h2 class="text-3xl sm:text-5xl" data-reveal="up">Sudah dijawab ({answered.length})</h2>
+      {answered.map((item) => (
+        <details class:list={[card, 'group']} data-reveal="up">
+          <summary class="cursor-pointer list-none">
+            {item.question}
+            <span class="mt-4 block w-fit rounded-lg border border-neutral-400 bg-white px-4 py-1 text-base group-open:hidden">
+              Lihat jawaban
+            </span>
+          </summary>
+          <p class="mt-6 border-t border-black/20 pt-6 font-light">{item.answer}</p>
+        </details>
+      ))}
+    </section>
+  </div>
+</BaseLayout>

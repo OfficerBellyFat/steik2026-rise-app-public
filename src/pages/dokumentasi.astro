@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { ACARA } from '../data/dokumentasi';
+
+// Figma layout per event: a row of three, then one tall tile beside two stacked tiles.
+const SLOTS = [
+  'aspect-[4/3]',
+  'aspect-[4/3]',
+  'aspect-[4/3]',
+  'aspect-[3/4] sm:row-span-2 sm:aspect-auto',
+  'aspect-[2/1]',
+  'aspect-[2/1]',
+];
+---
+
+<BaseLayout title="Dokumentasi Acara">
+  <section class="bg-fade-down">
+    <div class="mx-auto max-w-[1440px] px-4 pt-24 pb-12 sm:px-20 sm:pt-56">
+      <h1 class="mx-auto w-fit leading-[0.9]" data-reveal="fade">
+        <span class="block text-[clamp(3.5rem,9vw,8rem)]" data-reveal="up" style="--reveal-delay: 60ms">Dokumentasi</span>{' '}
+        <span class="flex items-end gap-4">
+          <span class="mb-6 hidden items-center gap-4 sm:flex" aria-hidden="true" data-reveal="up" style="--reveal-delay: 180ms">
+            <img src="/icons/camera.svg" alt="" width="63" height="48" class="animate-sway w-12" />
+            <span class="text-[10px]">◆</span>
+            <img src="/icons/gallery.svg" alt="" width="63" height="63" class="animate-float w-12" style="animation-delay: -1.2s" />
+            <span class="text-[10px]">◆</span>
+            <img src="/icons/computer.svg" alt="" width="62" height="61" class="animate-float-slow w-12" style="animation-delay: -3s" />
+            <span class="text-[10px]">◆</span>
+            <img src="/icons/disc-doc.svg" alt="" width="58" height="62" class="animate-sway w-12" style="animation-delay: -2.4s" />
+          </span>
+          <span class="text-script ml-auto block text-[clamp(3.5rem,9vw,8rem)]" data-reveal="up" style="--reveal-delay: 300ms">Acara</span>
+        </span>
+      </h1>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-[1440px] space-y-16 px-4 pb-16 sm:px-20">
+    {ACARA.map((acara) => (
+      <section class="space-y-8" data-reveal="up">
+        <header class="rounded-[2rem] border border-neutral-300 bg-white/60 p-3 pb-6">
+          <span class:list={['block h-9 w-1/4 rounded-full', acara.tagClass]} aria-hidden="true"></span>
+          <h2 class="mt-3 px-6 text-2xl font-semibold sm:text-3xl">{acara.title}</h2>
+          <p class="mt-1 px-6 font-light">{acara.description}</p>
+        </header>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-6 sm:gap-8">
+          {SLOTS.map((slot, i) => {
+            const photo = acara.photos[i];
+            const span = i < 3 ? 'sm:col-span-2' : 'sm:col-span-3';
+            return photo ? (
+              <img src={photo.src} alt={photo.alt} loading="lazy" class:list={['h-full w-full object-cover', slot, span]} />
+            ) : (
+              <Placeholder label="Foto" class:list={[slot, span]} />
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>

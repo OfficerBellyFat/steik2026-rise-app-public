@@ -1,0 +1,16 @@
+---
+interface Props {
+  label: string;
+  class?: string;
+}
+
+const { label, class: className } = Astro.props;
+---
+
+<div
+  class:list={['animate-placeholder flex items-center justify-center bg-placeholder p-4 text-center text-sm text-neutral-500', className]}
+  role="img"
+  aria-label={`Placeholder: ${label}`}
+>
+  {label}
+</div>

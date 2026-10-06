@@ -1,0 +1,23 @@
+---
+import { FOOTER_LINKS, SITE, SOCIAL } from '../consts';
+---
+
+<footer class="bg-linear-to-b from-white via-brand-tint to-brand/90">
+  <div class="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 pt-32 pb-12 sm:flex-row sm:items-end sm:justify-between sm:px-24 sm:pt-48" data-reveal="fade">
+    <p class="text-4xl font-semibold leading-none sm:text-6xl" data-reveal="up">
+      Connect
+      <span class="text-script block pl-16 text-3xl font-normal sm:pl-28 sm:text-4xl">with us</span>
+    </p>
+    <div class="space-y-2 text-sm sm:text-right sm:text-base" data-reveal="up" style="--reveal-delay: 120ms">
+      <p>
+        Instagram: <a href={SOCIAL.instagram.href} target="_blank" rel="noopener noreferrer" class="underline">{SOCIAL.instagram.handle}</a>
+      </p>
+      <ul class="flex gap-4 sm:justify-end">
+        {FOOTER_LINKS.map(({ href, label }) => (
+          <li><a href={href} class="hover:underline">{label}</a></li>
+        ))}
+      </ul>
+      <p class="text-xs text-black/60">© {new Date().getFullYear()} {SITE.title}</p>
+    </div>
+  </div>
+</footer>

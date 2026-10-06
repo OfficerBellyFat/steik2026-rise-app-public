@@ -1,0 +1,34 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+design/
+.claude/
+
+# leftovers from the old Laravel skeleton — never commit these
+vendor/
+storage/
+bootstrap/cache/
+database/*.sqlite
+public/build/
+.phpunit.result.cache
