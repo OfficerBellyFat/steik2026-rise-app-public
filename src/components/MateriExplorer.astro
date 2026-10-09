@@ -1,0 +1,160 @@
+---
+import type { MateriSubject } from '../data/materi';
+
+interface Props {
+  subjects: MateriSubject[];
+  /** Placeholder for the search field. */
+  placeholder?: string;
+}
+
+const { subjects, placeholder = 'Cari materi' } = Astro.props;
+
+const searchIndex = (subject: MateriSubject) =>
+  [subject.title, ...subject.resources.map((resource) => resource.label)].join(' ').toLowerCase();
+---
+
+<div data-reveal="up">
+  <label class="relative block">
+    <span class="sr-only">{placeholder}</span>
+    <input
+      id="materi-search"
+      type="search"
+      placeholder={placeholder}
+      class="w-full rounded-full border border-neutral-200 bg-white px-8 py-5 text-center text-base placeholder:text-neutral-400 focus:border-brand focus:outline-none"
+    />
+    <svg class="pointer-events-none absolute top-1/2 right-6 size-5 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+    </svg>
+  </label>
+</div>
+
+<ul id="materi-list" class="mt-12 grid items-start gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-14 lg:gap-y-12" data-reveal-group>
+  {subjects.map((subject) => (
+    <li data-search={searchIndex(subject)} data-reveal="up">
+      <details class="group rounded-[2rem] border-2 border-neutral-200 bg-white transition hover:border-brand hover:shadow-lg open:border-brand open:shadow-lg">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-8 [&::-webkit-details-marker]:hidden">
+          <h3 class="text-2xl font-semibold sm:text-3xl">{subject.title}</h3>
+          <svg class="materi-chevron size-6 shrink-0 text-brand transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </summary>
+        <div class="materi-panel overflow-hidden">
+          <div class="materi-resources flex flex-wrap gap-3 px-8 pb-8">
+            {subject.resources.map((resource) =>
+              resource.href ? (
+                <a
+                  href={resource.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center rounded-full border border-neutral-300 bg-neutral-100 px-5 py-2 text-sm font-medium text-brand-deep transition hover:border-brand hover:bg-white"
+                >
+                  {resource.label}
+                </a>
+              ) : (
+                <span
+                  aria-disabled="true"
+                  class="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-dashed border-neutral-300 px-5 py-2 text-sm font-medium text-neutral-400"
+                >
+                  {resource.label}
+                  <span class="text-[0.65rem] font-semibold tracking-wide uppercase">Coming soon</span>
+                </span>
+              ),
+            )}
+          </div>
+        </div>
+      </details>
+    </li>
+  ))}
+</ul>
+<p id="materi-empty" class="hidden py-12 text-center text-neutral-500">Materi tidak ditemukan.</p>
+
+<style>
+  details[open] .materi-chevron {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('#materi-search');
+  const items = document.querySelectorAll<HTMLLIElement>('#materi-list > li');
+  const empty = document.querySelector<HTMLElement>('#materi-empty');
+
+  // Match every card in a row to the tallest collapsed card in that row.
+  const equalize = () => {
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('#materi-list li > details'));
+    if (!cards.length) return;
+    cards.forEach((card) => (card.style.minHeight = ''));
+
+    const rows = new Map<number, { card: HTMLElement; height: number }[]>();
+    cards.forEach((card) => {
+      const li = card.closest<HTMLLIElement>('li');
+      const summary = card.querySelector('summary');
+      if (!li || li.hidden || !summary) return;
+      const style = getComputedStyle(card);
+      const height =
+        summary.getBoundingClientRect().height +
+        parseFloat(style.borderTopWidth) +
+        parseFloat(style.borderBottomWidth);
+      const row = rows.get(li.offsetTop) ?? [];
+      row.push({ card, height });
+      rows.set(li.offsetTop, row);
+    });
+
+    rows.forEach((row) => {
+      const max = Math.max(...row.map((entry) => entry.height));
+      row.forEach((entry) => (entry.card.style.minHeight = `${max}px`));
+    });
+  };
+
+  if (input && empty) {
+    input.addEventListener('input', () => {
+      const query = input.value.trim().toLowerCase();
+      let visible = 0;
+      items.forEach((item) => {
+        const match = item.dataset.search!.includes(query);
+        item.hidden = !match;
+        if (match) visible++;
+      });
+      empty.classList.toggle('hidden', visible > 0);
+      equalize();
+    });
+  }
+
+  equalize();
+  let resizeFrame = 0;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(equalize);
+  });
+  document.fonts?.ready.then(equalize);
+
+  // Animate the open/close height of each subject panel; resources fade alongside.
+  const DURATION = 300;
+  document.querySelectorAll<HTMLElement>('.materi-panel').forEach((panel) => {
+    const details = panel.closest('details');
+    const summary = details?.querySelector('summary');
+    const resources = panel.querySelector<HTMLElement>('.materi-resources');
+    if (!details || !summary || typeof panel.animate !== 'function') return;
+
+    let animation: Animation | undefined;
+    let fade: Animation | undefined;
+    summary.addEventListener('click', (event) => {
+      event.preventDefault();
+      animation?.cancel();
+      fade?.cancel();
+      if (details.open) {
+        const start = panel.getBoundingClientRect().height;
+        animation = panel.animate([{ height: `${start}px` }, { height: '0px' }], { duration: DURATION, easing: 'ease' });
+        fade = resources?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DURATION, easing: 'ease', fill: 'forwards' });
+        animation.onfinish = () => {
+          details.open = false;
+        };
+      } else {
+        details.open = true;
+        const target = panel.scrollHeight;
+        animation = panel.animate([{ height: '0px' }, { height: `${target}px` }], { duration: DURATION, easing: 'ease' });
+        fade = resources?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DURATION, easing: 'ease' });
+      }
+    });
+  });
+</script>

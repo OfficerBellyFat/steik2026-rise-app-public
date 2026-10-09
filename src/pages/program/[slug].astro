@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MateriExplorer from '../../components/MateriExplorer.astro';
+import { MATERI_SECTIONS } from '../../data/programs';
+import { MATERI_CATEGORIES } from '../../data/materi';
+
+export function getStaticPaths() {
+  return MATERI_SECTIONS.map((section) => {
+    const category = MATERI_CATEGORIES.find((item) => item.id === section.slug);
+    if (!category) throw new Error(`No materi data found for program "${section.slug}"`);
+    return { params: { slug: section.slug }, props: { section, category } };
+  });
+}
+
+const { section, category } = Astro.props;
+const { label, icons } = section;
+---
+
+<BaseLayout title={`Materi ${label}`}>
+  <h1 class="sr-only">Materi Program {label} — Rise Camp</h1>
+  <section class="scroll-mt-4 bg-white px-4 py-16 sm:py-24" data-reveal="up">
+    <h2 class="relative mx-auto w-fit font-pixel text-black">
+      {icons.map((icon) => (
+        <img
+          src={icon.src}
+          alt=""
+          width={icon.w}
+          height={icon.h}
+          class:list={['animate-float absolute w-10 sm:w-[83px]', icon.pos]}
+          style={{ animationDelay: '-1.5s' }}
+        />
+      ))}
+      <span class="block w-fit bg-yellow px-8 py-2 text-3xl shadow-hard sm:text-5xl">MATERI</span>{' '}
+      <span class="relative -mt-3 ml-[40%] block w-fit bg-teal px-6 py-1 text-4xl shadow-hard sm:text-7xl">{label}</span>
+    </h2>
+  </section>
+
+  <section class="mx-auto max-w-[1440px] px-4 pb-16 sm:px-14">
+    <MateriExplorer subjects={category.subjects} placeholder={`Cari materi ${label}`} />
+  </section>
+</BaseLayout>

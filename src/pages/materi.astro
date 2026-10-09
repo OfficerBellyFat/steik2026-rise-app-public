@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { CATEGORIES, MATERI } from '../data/materi';
+import { PROGRAMS } from '../data/programs';
 
 const INTRO =
   'lorem ipsum dolor sit amet consectetur adipiscing elit est occaecat tempor cumque voluptas aute omnis nobis quis ullamco magna distinctio aut cum officia mollitia iusto mollitia dolorem est sunt sed animi id consequat laboris amet do dolores eiusmod cupiditate eu aute qui';
@@ -15,65 +15,26 @@ const INTRO =
       </h1>
       <h2 class="mt-24 text-3xl font-semibold sm:mt-40 sm:text-5xl" data-reveal="up">Kumpulan materi</h2>
       <p class="mt-2 max-w-4xl font-light sm:text-xl" data-reveal="fade" style="--reveal-delay: 120ms">{INTRO}</p>
-      <label class="relative mt-8 block" data-reveal="up" style="--reveal-delay: 200ms">
-        <span class="sr-only">Cari materi</span>
-        <input
-          id="materi-search"
-          type="search"
-          placeholder="Cari materi Rise Camp"
-          class="w-full rounded-full border border-neutral-200 bg-white px-8 py-5 text-center text-base placeholder:text-neutral-400 focus:border-brand focus:outline-none"
-        />
-        <svg class="pointer-events-none absolute top-1/2 right-6 size-5 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
-        </svg>
-      </label>
     </div>
   </section>
 
   <section class="mx-auto max-w-[1440px] px-4 pb-16 sm:px-14">
-    <ul id="materi-list" class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-14 lg:gap-y-20" data-reveal-group>
-      {MATERI.map((item) => {
-        const category = CATEGORIES[item.category];
-        const Tag = item.href ? 'a' : 'div';
-        return (
-          <li
-            data-search={`${item.title} ${item.description} ${category.label}`.toLowerCase()}
-            data-reveal="up"
+    <ul class="grid gap-8 sm:grid-cols-2" data-reveal-group>
+      {PROGRAMS.map((program) => (
+        <li data-reveal="up">
+          <a
+            href={`/program/${program.id}`}
+            class="flex h-full flex-col rounded-[2rem] border-2 border-neutral-200 p-8 transition hover:border-brand hover:shadow-lg"
           >
-            <Tag
-              {...(item.href ? { href: item.href, target: '_blank', rel: 'noopener noreferrer' } : {})}
-              class:list={[
-                'block h-full rounded-[2rem] border-2 border-neutral-200 p-8',
-                item.href && 'transition hover:border-brand hover:shadow-lg',
-              ]}
-            >
-              <span class:list={['inline-block rounded-full px-4 py-1 text-xs font-medium text-white', category.class]}>
-                {category.label}
-              </span>
-              <h3 class="mt-2 text-2xl font-semibold sm:text-3xl">{item.title}</h3>
-              <p class="mt-1 font-light text-neutral-700">{item.description}</p>
-            </Tag>
-          </li>
-        );
-      })}
+            <span class:list={['inline-block w-fit rounded-full px-4 py-1 text-xs font-medium text-white', program.labelClass]}>
+              {program.title}
+            </span>
+            <h3 class="mt-2 text-2xl font-semibold sm:text-3xl">{program.tagline}</h3>
+            <p class="mt-1 font-light text-neutral-700">{program.description}</p>
+            <span class="mt-6 font-medium text-brand">Lihat materi →</span>
+          </a>
+        </li>
+      ))}
     </ul>
-    <p id="materi-empty" class="hidden py-12 text-center text-neutral-500">Materi tidak ditemukan.</p>
   </section>
 </BaseLayout>
-
-<script>
-  const input = document.querySelector<HTMLInputElement>('#materi-search')!;
-  const items = document.querySelectorAll<HTMLLIElement>('#materi-list > li');
-  const empty = document.querySelector<HTMLElement>('#materi-empty')!;
-
-  input.addEventListener('input', () => {
-    const query = input.value.trim().toLowerCase();
-    let visible = 0;
-    items.forEach((item) => {
-      const match = item.dataset.search!.includes(query);
-      item.hidden = !match;
-      if (match) visible++;
-    });
-    empty.classList.toggle('hidden', visible > 0);
-  });
-</script>
