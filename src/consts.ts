@@ -11,6 +11,13 @@ export const NAV = [
   { href: '/program', label: 'Program Kami' },
 ];
 
+/** Secondary links grouped under the "Lain-lain" dropdown in the navbar/sidebar. */
+export const MORE_NAV = [
+  { href: '/dokumentasi', label: 'Dokumentasi' },
+  { href: '/qna', label: 'QnA' },
+  { href: '/blog', label: 'Blog' },
+];
+
 export const FOOTER_LINKS = [
   { href: '/dokumentasi', label: 'Dokumentasi' },
   { href: '/qna', label: 'QnA' },

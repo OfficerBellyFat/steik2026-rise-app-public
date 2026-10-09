@@ -1,11 +1,12 @@
 ---
 import { Image } from 'astro:assets';
-import { NAV } from '../consts';
+import { NAV, MORE_NAV } from '../consts';
 import Sidebar from './Sidebar.astro';
 import logo from '../assets/logo-steik.png';
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const moreActive = MORE_NAV.some(({ href }) => isActive(href));
 ---
 
 <header
@@ -25,20 +26,78 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
         <path d="M4 7h16M4 12h16M4 17h16" />
       </svg>
     </button>
-<ul class="hidden items-center gap-4 overflow-x-auto whitespace-nowrap text-sm sm:flex sm:gap-8 sm:text-2xl">
-      {NAV.map(({ href, label }) => (
-        <li
+
+    <div class="hidden items-center sm:flex">
+      <ul
+        id="primary-nav"
+        class="flex items-center gap-4 overflow-x-auto whitespace-nowrap text-sm sm:gap-8 sm:text-2xl"
+      >
+        {NAV.map(({ href, label }) => (
+          <li
+            class:list={[
+              'decoration-2 underline-offset-8 hover:underline',
+              isActive(href) && 'font-bold text-brand underline decoration-brand',
+            ]}
+          >
+            <a href={href} aria-current={isActive(href) ? 'page' : undefined}>
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="group relative ml-4 shrink-0 sm:ml-8" data-more-wrap>
+        <button
+          id="more-menu-toggle"
+          type="button"
           class:list={[
-            'decoration-2 underline-offset-8 hover:underline',
-            isActive(href) && 'font-bold text-brand underline decoration-brand',
+            'flex items-center gap-1 text-sm decoration-2 underline-offset-8 hover:underline sm:text-2xl',
+            moreActive && 'font-bold text-brand underline decoration-brand',
           ]}
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="more-menu"
+          data-more-toggle
+          data-more-active={moreActive ? 'true' : undefined}
         >
-          <a href={href} aria-current={isActive(href) ? 'page' : undefined}>
-            {label}
-          </a>
-        </li>
-      ))}
-    </ul>
+          Lain-lain
+          <svg
+            class="size-4 transition-transform group-hover:rotate-180 sm:size-5"
+            data-more-chevron
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+        <div
+          id="more-menu"
+          class="invisible absolute left-0 top-full z-50 w-48 translate-y-1 pt-3 opacity-0 transition-all duration-150 delay-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-hover:delay-0 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:delay-0 group-[.is-open]:visible group-[.is-open]:translate-y-0 group-[.is-open]:opacity-100 group-[.is-open]:delay-0"
+        >
+          <ul class="overflow-hidden rounded-xl border border-neutral-200 bg-white text-sm shadow-xl sm:text-base">
+            {MORE_NAV.map(({ href, label }) => (
+              <li>
+                <a
+                  href={href}
+                  aria-current={isActive(href) ? 'page' : undefined}
+                  class:list={[
+                    'block px-4 py-2 text-black transition hover:bg-brand-soft',
+                    isActive(href) && 'font-bold text-brand',
+                  ]}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <a href="/" class="shrink-0" aria-label="STEI-K — beranda">
       <Image src={logo} alt="STEIK" height={48} class="h-8 w-auto sm:h-12" />
     </a>
@@ -51,30 +110,54 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   // Turn the navbar purple once the user scrolls, white again at the top.
   const nav = document.getElementById('site-nav');
   if (nav) {
+    const activeLi = nav.querySelector('#primary-nav a[aria-current="page"]')?.parentElement ?? null;
+    const moreToggle = nav.querySelector<HTMLButtonElement>('[data-more-toggle]');
+    const moreActive = moreToggle?.dataset.moreActive === 'true';
+
+    const setAccent = (el: Element, white: boolean) => {
+      if (white) {
+        el.classList.add('text-white', 'decoration-white');
+        el.classList.remove('text-brand', 'decoration-brand');
+      } else {
+        el.classList.add('text-brand', 'decoration-brand');
+        el.classList.remove('text-white', 'decoration-white');
+      }
+    };
+
     const update = () => {
       const scrolled = window.scrollY > 16;
-      if (scrolled) {
-        nav.classList.add('bg-brand', 'text-white');
-        nav.classList.remove('bg-white', 'text-black');
-      } else {
-        nav.classList.remove('bg-brand', 'text-white');
-        nav.classList.add('bg-white', 'text-black');
-      }
-      // Keep the active (current page) link readable in both navbar states:
-      // purple underline + bold text on the white navbar, white when the
-      // navbar itself turns purple.
-      const activeLink = nav.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
-      const active = activeLink?.parentElement ?? null;
-      if (!active) return;
-      if (scrolled) {
-        active.classList.add('text-white', 'decoration-white');
-        active.classList.remove('text-brand', 'decoration-brand');
-      } else {
-        active.classList.add('text-brand', 'decoration-brand');
-        active.classList.remove('text-white', 'decoration-white');
-      }
+      nav.classList.toggle('bg-brand', scrolled);
+      nav.classList.toggle('text-white', scrolled);
+      nav.classList.toggle('bg-white', !scrolled);
+      nav.classList.toggle('text-black', !scrolled);
+      if (activeLi) setAccent(activeLi, scrolled);
+      if (moreActive && moreToggle) setAccent(moreToggle, scrolled);
     };
     update();
     window.addEventListener('scroll', update, { passive: true });
+  }
+
+  // "Lain-lain" dropdown: click to toggle (touch/keyboard); hover handled in CSS.
+  const moreButton = document.getElementById('more-menu-toggle');
+  if (moreButton) {
+    const wrap = moreButton.closest('[data-more-wrap]');
+    const chevron = moreButton.querySelector('[data-more-chevron]');
+    const isOpen = () => wrap?.classList.contains('is-open') ?? false;
+    const setOpen = (open: boolean) => {
+      wrap?.classList.toggle('is-open', open);
+      moreButton.setAttribute('aria-expanded', String(open));
+      chevron?.classList.toggle('rotate-180', open);
+    };
+    moreButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      setOpen(!isOpen());
+    });
+    document.addEventListener('click', (event) => {
+      if (!isOpen()) return;
+      if (!wrap?.contains(event.target as Node)) setOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
   }
 </script>
