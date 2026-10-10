@@ -11,15 +11,17 @@ export interface Program {
   banner: ImageMetadata;
 }
 
-const LOREM =
-  'lorem ipsum dolor sit amet consectetur adipiscing elit est occaecat tempor cumque voluptas aute omnis nobis quis ullamco magna distinctio aut cum officia mollitia iusto mollitia dolorem est sunt sed animi id consequat laboris amet do dolores eiusmod cupiditate eu aute qui';
+const TKA_desc =
+  'Pelajari materi TKA yang disusun ringkas dan mudah dipahami, lengkap dengan contoh soal dan pembahasan. Cocok untuk memperkuat dasar dan membangun kepercayaan diri sebelum hari ujian.';
+const UTBK_desc =
+  'Siapkan dirimu mengejar skor 700+ lewat materi UTBK yang terstruktur, latihan soal bertingkat, dan strategi pengerjaan. Fokus pada konsep penting agar belajarmu lebih efektif dan terarah.';
 
 export const PROGRAMS: Program[] = [
   {
     id: 'tka',
     title: 'PROGRAM TKA',
     tagline: '“Aku Siap Bantai TKA”',
-    description: LOREM,
+    description: TKA_desc,
     labelClass: 'bg-program-tka',
     banner: tkaBanner,
   },
@@ -27,7 +29,7 @@ export const PROGRAMS: Program[] = [
     id: 'utbk',
     title: 'PROGRAM UTBK',
     tagline: 'Aku Siap 700+ UTBK',
-    description: LOREM,
+    description: UTBK_desc,
     labelClass: 'bg-program-utbk',
     banner: utbkBanner,
   },

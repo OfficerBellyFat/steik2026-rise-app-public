@@ -12,11 +12,10 @@ export interface Acara {
   photos: Photo[];
 }
 
-const LOREM =
-  'lorem ipsum dolor sit amet consectetur adipiscing elit est occaecat tempor cumque voluptas aute omnis nobis quis ullamco magna distinctio aut';
+//const LOREM =
+//  'lorem ipsum dolor sit amet consectetur adipiscing elit est occaecat tempor cumque voluptas aute omnis nobis quis ullamco magna distinctio aut';
 
 export const ACARA: Acara[] = [
-  { title: 'Loren ipsum', description: LOREM, tagClass: 'bg-tag-blue', photos: [] },
-  { title: 'Loren ipsum', description: LOREM, tagClass: 'bg-tag-orange', photos: [] },
-  { title: 'Loren ipsum', description: LOREM, tagClass: 'bg-tag-pink', photos: [] },
+  { title: 'SMAN 15 Bandung', description: "Coming Soon", tagClass: 'bg-tag-blue', photos: [] },
+  { title: 'SMA Puragabaya', description: "Coming Soon", tagClass: 'bg-tag-orange', photos: [] },
 ];
