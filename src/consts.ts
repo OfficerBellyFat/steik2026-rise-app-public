@@ -13,6 +13,7 @@ export const NAV = [
 
 /** Secondary links grouped under the "Lain-lain" dropdown in the navbar/sidebar. */
 export const MORE_NAV = [
+  { href: '/survei', label: 'Survei SNBT' },
   { href: '/dokumentasi', label: 'Dokumentasi' },
   // { href: '/qna', label: 'QnA' },
   // QnA is hidden in production: the source page is kept as src/pages/_qna.astro

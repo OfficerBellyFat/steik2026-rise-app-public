@@ -1,0 +1,43 @@
+---
+import { summarize, fmt } from '../../lib/stats';
+
+interface Props {
+  title: string;
+  firstColumn: string;
+  rows: { code: string; name: string; values: readonly number[] }[];
+}
+
+const { title, firstColumn, rows } = Astro.props;
+const stats = rows.map((row) => ({ ...row, ...summarize(row.values) }));
+const showN = new Set(stats.map((row) => row.n)).size > 1;
+---
+
+<div class="h-full rounded-[2rem] border-2 border-black bg-white p-6 shadow-hard-sm sm:p-8">
+  <h3 class="text-2xl font-semibold sm:text-3xl">{title}</h3>
+  <div class="mt-4 overflow-x-auto">
+    <table class="w-full min-w-[26rem] text-left text-sm sm:text-base">
+      <thead>
+        <tr class="border-b-2 border-black text-xs tracking-wide text-neutral-600 uppercase">
+          <th scope="col" class="py-3 pr-3 font-semibold">{firstColumn}</th>
+          <th scope="col" class="px-3 py-3 text-right font-semibold">Minimum</th>
+          <th scope="col" class="px-3 py-3 text-right font-semibold">Rerata</th>
+          <th scope="col" class="py-3 pl-3 text-right font-semibold">Maksimum</th>
+        </tr>
+      </thead>
+      <tbody>
+        {stats.map((row) => (
+          <tr class="border-b border-neutral-200 last:border-0">
+            <th scope="row" class="py-3 pr-3 font-normal">
+              <span class="block font-pixel text-lg font-bold">{row.code}</span>
+              <span class="block font-body text-xs text-neutral-500">{row.name}</span>
+              {showN && <span class="block font-body text-xs text-neutral-400 tabular-nums">n={row.n}</span>}
+            </th>
+            <td class="px-3 py-3 text-right font-body tabular-nums">{fmt(row.min)}</td>
+            <td class="px-3 py-3 text-right font-bold text-brand font-body tabular-nums">{fmt(row.mean)}</td>
+            <td class="py-3 pl-3 text-right font-body tabular-nums">{fmt(row.max)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>

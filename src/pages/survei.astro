@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SurveiTabs from '../components/survei/SurveiTabs.astro';
+import UtbkPanel from '../components/survei/UtbkPanel.astro';
+import RaporPanel from '../components/survei/RaporPanel.astro';
+import PrestasiPanel from '../components/survei/PrestasiPanel.astro';
+import { UTBK_SNBT, UTBK_SSU } from '../data/survei/raw';
+
+const TABS = [
+  { id: 'snbt', label: 'Skor UTBK SNBT' },
+  { id: 'ssu', label: 'Skor UTBK Jalur SSU' },
+  { id: 'rapor', label: 'Nilai Rapor' },
+  { id: 'prestasi', label: 'Prestasi SNBP' },
+];
+
+const INTRO =
+  "Data skor UTBK, nilai rapor, dan prestasi yang dibagikan secara sukarela dan anonim oleh mahasiswa STEI-K '26, sebagai gambaran nilai masuk bagi calon pendaftar berikutnya.";
+const nSnbt = UTBK_SNBT.RATA.length;
+const nSsu = UTBK_SSU.RATA.length;
+---
+
+<BaseLayout title="Survei SNBT" description="Laporan survei skor UTBK dan nilai masuk mahasiswa STEI-K '26.">
+  <section class="bg-linear-to-b from-tag-blue via-brand-tint to-white">
+    <div class="mx-auto max-w-[1440px] px-4 pt-24 pb-12 sm:px-14 sm:pt-48">
+      <h1 class="mx-auto w-fit leading-[0.85]">
+        <span class="block text-[clamp(3rem,8vw,7rem)]" data-reveal="up" style="--reveal-delay: 60ms">Laporan Survei</span>{' '}
+        <span class="text-script block pl-[20%] text-[clamp(3rem,8vw,7rem)]" data-reveal="up" style="--reveal-delay: 200ms">SNBT &amp; Nilai Masuk</span>
+      </h1>
+      <p class="mt-12 max-w-4xl font-light sm:mt-20 sm:text-xl" data-reveal="fade" style="--reveal-delay: 120ms">
+        {INTRO}
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-[1440px] px-4 pb-20 sm:px-14">
+    <SurveiTabs tabs={TABS} />
+
+    <div class="mt-8 space-y-16">
+      <section data-tab-panel="snbt">
+        <UtbkPanel
+          heading="Statistik Nilai UTBK SNBT"
+          respondentLabel="Responden UTBK SNBT"
+          description={`Sebanyak ${nSnbt} mahasiswa STEI-K '26 jalur SNBT membagikan skor UTBK mereka.`}
+          data={UTBK_SNBT}
+        />
+      </section>
+      <section data-tab-panel="ssu">
+        <UtbkPanel
+          heading="Statistik Nilai UTBK Jalur SSU"
+          respondentLabel="Responden SSU UTBK"
+          description={`Sebanyak ${nSsu} mahasiswa STEI-K '26 jalur SSU membagikan skor UTBK mereka.`}
+          data={UTBK_SSU}
+        />
+      </section>
+      <section data-tab-panel="rapor"><RaporPanel /></section>
+      <section data-tab-panel="prestasi"><PrestasiPanel /></section>
+    </div>
+  </section>
+</BaseLayout>
