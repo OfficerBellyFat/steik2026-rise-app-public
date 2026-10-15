@@ -37,6 +37,8 @@ const { tabs } = Astro.props;
       panel.id = `panel-${id}`;
       panel.setAttribute('role', 'tabpanel');
       panel.setAttribute('aria-labelledby', `tab-${id}`);
+      // Keeps the sticky navbar from covering the heading when we scroll to it.
+      panel.classList.add('scroll-mt-28');
     });
 
     const select = (id: string, { focus = false, updateHash = true } = {}) => {
@@ -70,7 +72,14 @@ const { tabs } = Astro.props;
       });
     });
 
-    const fromHash = () => select(location.hash.slice(1) || tabs[0].dataset.tab!, { updateHash: false });
+    // Arriving from a deep link (e.g. /survei#rapor from the homepage): the
+    // panels' ids are `panel-<id>`, so the browser's own fragment scroll finds
+    // nothing. Select the tab, then bring its panel into view ourselves.
+    const fromHash = () => {
+      const id = location.hash.slice(1);
+      select(id || tabs[0].dataset.tab!, { updateHash: false });
+      if (id) document.getElementById(`panel-${id}`)?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    };
     window.addEventListener('hashchange', fromHash);
     fromHash();
   }

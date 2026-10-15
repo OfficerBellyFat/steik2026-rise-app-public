@@ -41,12 +41,9 @@ const pageTitle = title ? `${title} · ${SITE.title}` : SITE.title;
   // Reveal-on-scroll: adds `.is-revealed` (and optional delays) once an
   // element carrying `data-reveal` scrolls into view.
   const initReveal = () => {
-    const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
-    if (items.length === 0) return;
-
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    // Auto-stagger children of any `[data-reveal-group]` container.
+    // Auto-stagger children of any `[data-reveal-group]` container. This runs
+    // first: it annotates children that don't carry `data-reveal` themselves, and
+    // the query below must see those annotations to observe them.
     document.querySelectorAll<HTMLElement>('[data-reveal-group]').forEach((group) => {
       Array.from(group.children).forEach((child, i) => {
         const el = child as HTMLElement;
@@ -56,6 +53,11 @@ const pageTitle = title ? `${title} · ${SITE.title}` : SITE.title;
         }
       });
     });
+
+    const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+    if (items.length === 0) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     if (reduced.matches) {
       items.forEach((el) => el.classList.add('is-revealed'));

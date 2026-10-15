@@ -5,13 +5,7 @@ import UtbkPanel from '../components/survei/UtbkPanel.astro';
 import RaporPanel from '../components/survei/RaporPanel.astro';
 import PrestasiPanel from '../components/survei/PrestasiPanel.astro';
 import { UTBK_SNBT, UTBK_SSU } from '../data/survei/raw';
-
-const TABS = [
-  { id: 'snbt', label: 'Skor UTBK SNBT' },
-  { id: 'ssu', label: 'Skor UTBK Jalur SSU' },
-  { id: 'rapor', label: 'Nilai Rapor' },
-  { id: 'prestasi', label: 'Prestasi SNBP' },
-];
+import { SURVEI_TABS } from '../data/survei/tabs';
 
 const INTRO =
   "Data skor UTBK, nilai rapor, dan prestasi yang dibagikan secara sukarela dan anonim oleh mahasiswa STEI-K '26, sebagai gambaran nilai masuk bagi calon pendaftar berikutnya.";
@@ -33,7 +27,7 @@ const nSsu = UTBK_SSU.RATA.length;
   </section>
 
   <section class="mx-auto max-w-[1440px] px-4 pb-20 sm:px-14">
-    <SurveiTabs tabs={TABS} />
+    <SurveiTabs tabs={SURVEI_TABS} />
 
     <div class="mt-8 space-y-16">
       <section data-tab-panel="snbt">

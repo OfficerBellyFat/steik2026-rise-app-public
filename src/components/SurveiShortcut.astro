@@ -1,0 +1,29 @@
+---
+import { SURVEI_TABS } from '../data/survei/tabs';
+---
+
+<!-- Homepage shortcut into /survei. Each pill deep-links to one tab; the tabs
+     are plain links (not `role="tab"`), because they navigate to another page
+     rather than switching a panel in place. -->
+<div class="mt-8 flex flex-col items-center gap-4 sm:mt-10" data-reveal="fade" style="--reveal-delay: 520ms">
+  <span class="inline-block rounded-full bg-yellow px-4 py-1 text-xs font-semibold tracking-wide text-black uppercase">
+    Data &amp; Nilai Masuk
+  </span>
+  <ul class="flex flex-wrap justify-center gap-3">
+    {SURVEI_TABS.map((tab) => (
+      <li>
+        <a
+          href={`/survei#${tab.id}`}
+          aria-label={`${tab.label} — ${tab.count} responden`}
+          class="group inline-flex items-center gap-2 rounded-full border-2 border-black bg-white px-5 py-2 text-sm font-semibold whitespace-nowrap transition hover:bg-brand-soft sm:text-base"
+        >
+          <span class="sm:hidden">{tab.shortLabel}</span>
+          <span class="hidden sm:inline">{tab.label}</span>
+          <span class="rounded-full bg-brand-soft px-2 py-0.5 text-[0.7rem] font-semibold tabular-nums text-brand-deep transition group-hover:bg-white">
+            {tab.count}
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
