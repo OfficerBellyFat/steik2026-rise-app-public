@@ -105,9 +105,9 @@ export const MATERI_CATEGORIES = materiSchema.parse([
       {
         title: 'Penalaran Matematika',
         resources: [
-          { label: 'Materi' },
-          { label: 'Paket soal 1' },
-          { label: 'Paket soal 2' },
+          { label: 'Materi', href: 'https://drive.google.com/file/d/1JqOqoOiK-1tZd--yToVznvvTYPdjhkMW/view?usp=drive_link' },
+          { label: 'Paket soal 1', href: 'https://drive.google.com/file/d/1_6ey3x5xzdIfmR09hXQyU5xEvHv3joy5/view?usp=drive_link' },
+          { label: 'Paket soal 2', href: 'https://drive.google.com/file/d/1laCLzVm4XHHFxSAOqzKf-2dwRAdsPYwa/view?usp=drive_link' },
         ],
       },
     ],

@@ -1,6 +1,6 @@
 ## Project
 
-Static site for Rise Camp (STEI-K ITB '26): Drive-linked study materials, programs, event docs, QnA. Astro (static output) + Tailwind CSS 4 + MDX.
+Static site for Rise Camp (STEI-K ITB '26): Drive-linked study materials, programs, event docs. Astro (static output) + Tailwind CSS 4 + MDX.
 
 - Content is hard-coded in the repo by request — do not introduce a CMS, database, or server runtime.
 - Content data lives in `src/data/*.ts`; site-wide strings in `src/consts.ts`.

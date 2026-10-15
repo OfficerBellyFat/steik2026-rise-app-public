@@ -1,0 +1,86 @@
+---
+interface Props {
+  tabs: { id: string; label: string; icon?: string }[];
+}
+
+const { tabs } = Astro.props;
+---
+
+<div class="-mx-4 overflow-x-auto px-4 py-2 sm:mx-0 sm:px-0" data-survei-tabs>
+  <div role="tablist" aria-label="Kategori survei" class="mx-auto flex w-max gap-3 pr-4 sm:w-auto sm:flex-wrap sm:justify-center sm:pr-0">
+    {tabs.map((tab, i) => (
+      <button
+        type="button"
+        role="tab"
+        id={`tab-${tab.id}`}
+        data-tab={tab.id}
+        aria-controls={`panel-${tab.id}`}
+        aria-selected={i === 0 ? 'true' : 'false'}
+        tabindex={i === 0 ? 0 : -1}
+        class="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-full border-2 border-black bg-white px-5 py-2 text-sm font-semibold whitespace-nowrap transition hover:bg-brand-soft aria-selected:bg-brand aria-selected:text-white aria-selected:shadow-hard-sm sm:text-base"
+      >
+        {tab.icon && <span aria-hidden="true">{tab.icon}</span>}
+        {tab.label}
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-survei-tabs]');
+  if (root) {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-tab-panel]'));
+
+    panels.forEach((panel) => {
+      const id = panel.dataset.tabPanel!;
+      panel.id = `panel-${id}`;
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', `tab-${id}`);
+      // Keeps the sticky navbar from covering the heading when we scroll to it.
+      panel.classList.add('scroll-mt-28');
+    });
+
+    const select = (id: string, { focus = false, updateHash = true } = {}) => {
+      if (!tabs.some((t) => t.dataset.tab === id)) id = tabs[0].dataset.tab!;
+      tabs.forEach((tab) => {
+        const active = tab.dataset.tab === id;
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+        if (active && focus) {
+          tab.focus();
+          tab.scrollIntoView({ block: 'nearest', inline: 'center' });
+        }
+      });
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.tabPanel !== id;
+      });
+      if (updateHash) history.replaceState(null, '', `#${id}`);
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(tab.dataset.tab!));
+      tab.addEventListener('keydown', (e) => {
+        let next = -1;
+        if (e.key === 'ArrowRight') next = (i + 1) % tabs.length;
+        else if (e.key === 'ArrowLeft') next = (i - 1 + tabs.length) % tabs.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = tabs.length - 1;
+        if (next < 0) return;
+        e.preventDefault();
+        select(tabs[next].dataset.tab!, { focus: true });
+      });
+    });
+
+    // Arriving from a deep link (e.g. /survei#rapor from the homepage): the
+    // panels' ids are `panel-<id>`, so the browser's own fragment scroll finds
+    // nothing. Select the tab, then bring its panel into view ourselves.
+    const fromHash = () => {
+      const id = location.hash.slice(1);
+      select(id || tabs[0].dataset.tab!, { updateHash: false });
+      if (id) document.getElementById(`panel-${id}`)?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    };
+    window.addEventListener('hashchange', fromHash);
+    fromHash();
+  }
+</script>

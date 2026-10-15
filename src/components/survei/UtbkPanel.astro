@@ -1,0 +1,51 @@
+---
+import { summarize } from '../../lib/stats';
+import type { UTBK_SNBT } from '../../data/survei/raw';
+import RespondentCard from './RespondentCard.astro';
+import StatTable from './StatTable.astro';
+import RangeCard from './RangeCard.astro';
+
+type UtbkData = { [K in keyof typeof UTBK_SNBT]: readonly number[] };
+
+interface Props {
+  heading: string;
+  respondentLabel: string;
+  description: string;
+  data: UtbkData;
+}
+
+const { heading, respondentLabel, description, data } = Astro.props;
+
+const SUBTESTS = [
+  { key: 'RATA', code: 'RATA', name: 'Nilai Rerata (rata-rata seluruh subtes)' },
+  { key: 'PU', code: 'PU', name: 'Penalaran Umum' },
+  { key: 'PPU', code: 'PPU', name: 'Pengetahuan dan Pemahaman Umum' },
+  { key: 'PBM', code: 'PBM', name: 'Pemahaman Bacaan dan Menulis' },
+  { key: 'PK', code: 'PK', name: 'Pengetahuan Kuantitatif' },
+  { key: 'LBI_SAINTEK', code: 'LBI (Saintek)', name: 'Literasi dalam Bahasa Indonesia — Saintek' },
+  { key: 'LBI_SOSHUM', code: 'LBI (Soshum)', name: 'Literasi dalam Bahasa Indonesia — Soshum' },
+  { key: 'LBE', code: 'LBE', name: 'Literasi dalam Bahasa Inggris' },
+  { key: 'PM', code: 'PM', name: 'Penalaran Matematika' },
+] as const;
+
+const rows = SUBTESTS.map((s) => ({ code: s.code, name: s.name, values: data[s.key] }));
+const count = summarize(data.RATA).n;
+const axis = { min: 400, max: 1100, step: 100 };
+---
+
+<div class="grid gap-6 lg:grid-cols-3 lg:gap-8">
+  <RespondentCard
+    label={respondentLabel}
+    count={count}
+    description={description}
+    footnote="Data bersifat anonim; tiap subtes dihitung dari responden yang mengisinya."
+  />
+  <div class="min-w-0 lg:col-span-2">
+    <StatTable title={heading} firstColumn="Subtes" rows={rows} />
+  </div>
+</div>
+
+<h3 class="mt-12 text-2xl font-semibold sm:text-3xl">Rentang Sebaran Nilai per Subtes</h3>
+<div class="mt-6 grid gap-6 sm:grid-cols-2 lg:gap-8">
+  {rows.map((row) => <RangeCard code={row.code} name={row.name} values={row.values} axis={axis} />)}
+</div>

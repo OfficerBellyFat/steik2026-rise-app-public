@@ -1,0 +1,19 @@
+---
+interface Props {
+  label: string;
+  count: number;
+  unit?: string;
+  description: string;
+  footnote?: string;
+}
+
+const { label, count, unit = 'Mahasiswa', description, footnote } = Astro.props;
+---
+
+<div class="flex h-full flex-col rounded-[2rem] border-2 border-black bg-white p-6 shadow-hard-sm sm:p-8">
+  <span class="inline-block w-fit rounded-full bg-yellow px-4 py-1 text-xs font-semibold tracking-wide text-black uppercase">{label}</span>
+  <p class="mt-5 font-body text-7xl leading-none font-bold tabular-nums text-brand sm:text-8xl">{count}</p>
+  <p class="mt-2 font-pixel text-xl font-semibold">{unit}</p>
+  <p class="mt-4 font-light text-neutral-700">{description}</p>
+  {footnote && <p class="mt-auto pt-6 text-xs text-neutral-500">{footnote}</p>}
+</div>

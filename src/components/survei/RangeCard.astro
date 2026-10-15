@@ -1,0 +1,55 @@
+---
+import { summarize, fmt } from '../../lib/stats';
+
+interface Props {
+  code: string;
+  name: string;
+  values: readonly number[];
+  axis: { min: number; max: number; step: number };
+}
+
+const { code, name, values, axis } = Astro.props;
+const s = summarize(values);
+const span = axis.max - axis.min;
+const pos = (v: number) => Math.min(100, Math.max(0, ((v - axis.min) / span) * 100));
+const ticks: number[] = [];
+for (let t = axis.min; t <= axis.max + 1e-9; t += axis.step) ticks.push(t);
+const left = pos(s.min);
+const width = pos(s.max) - left;
+const close = width < 8;
+---
+
+<div class="h-full rounded-[2rem] border-2 border-black bg-white p-6 shadow-hard-sm">
+  <div class="flex items-start justify-between gap-3">
+    <div>
+      <h4 class="font-pixel text-xl font-bold">{code}</h4>
+      <p class="font-body text-xs text-neutral-500">{name}</p>
+      <p class="font-body text-xs text-neutral-400 tabular-nums">n={s.n}</p>
+    </div>
+    <span class="shrink-0 rounded-full bg-yellow px-3 py-1 font-body text-xs font-semibold tabular-nums">Mean: {fmt(s.mean)}</span>
+  </div>
+
+  <div class="mx-3 mt-8">
+    <div class="relative h-4 rounded-full bg-neutral-200">
+      <div class="absolute inset-y-0 rounded-full border border-black bg-linear-to-r from-brand-light to-brand" style={`left:${left}%;width:${width}%`}></div>
+      <button
+        type="button"
+        title={`Mean: ${fmt(s.mean)}`}
+        aria-label={`Rerata ${code}: ${fmt(s.mean)}`}
+        class="absolute top-1/2 size-6 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full border-2 border-black bg-yellow transition hover:scale-125 focus-visible:scale-125 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+        style={`left:${pos(s.mean)}%`}
+      ></button>
+    </div>
+
+    <div class="relative mt-2 h-4 font-body text-[0.7rem] font-semibold tabular-nums">
+      <span class:list={['absolute', close ? '-translate-x-full pr-1' : '-translate-x-1/2']} style={`left:${left}%`}>{Math.round(s.min)}</span>
+      <span class:list={['absolute', close ? 'pl-1' : '-translate-x-1/2']} style={`left:${pos(s.max)}%`}>{Math.round(s.max)}</span>
+    </div>
+
+    <div class="relative mt-3 h-4 border-t border-neutral-300 font-body text-[0.65rem] text-neutral-500 tabular-nums">
+      {ticks.map((t) => (
+        <span class="absolute top-1 -translate-x-1/2" style={`left:${pos(t)}%`}>{t}</span>
+      ))}
+    </div>
+  </div>
+</div>

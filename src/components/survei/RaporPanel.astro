@@ -1,0 +1,42 @@
+---
+import { RAPOR } from '../../data/survei/raw';
+import RespondentCard from './RespondentCard.astro';
+import StatTable from './StatTable.astro';
+import RangeCard from './RangeCard.astro';
+
+const JALUR = [
+  { key: 'IUP', code: 'IUP', name: 'Jalur IUP' },
+  { key: 'SNBP', code: 'SNBP', name: 'Jalur SNBP' },
+  { key: 'SSU_RAPOR', code: 'SSU Rapor', name: 'Jalur SSU — rapor' },
+  { key: 'SSU_UTBK', code: 'SSU UTBK', name: 'Jalur SSU — UTBK' },
+  { key: 'SSU_TES', code: 'SSU Tes', name: 'Jalur SSU — tes' },
+  { key: 'SSU_TALENTA', code: 'SSU Talenta', name: 'Jalur SSU — talenta' },
+] as const;
+
+const rows = JALUR.map((j) => ({ code: j.code, name: j.name, values: RAPOR[j.key] }));
+const total = rows.reduce((sum, r) => sum + r.values.length, 0);
+const axis = { min: 70, max: 100, step: 5 };
+---
+
+<div class="space-y-10">
+  <div class="grid gap-6 lg:grid-cols-3">
+    <RespondentCard
+      label="Responden Nilai Rapor"
+      count={total}
+      description="Total mahasiswa dari seluruh jalur yang bersedia membagikan rata-rata nilai rapornya."
+      footnote="Nilai berupa rata-rata nilai rapor sesuai yang dilaporkan responden."
+    />
+    <div class="min-w-0 lg:col-span-2">
+      <StatTable title="Statistik Nilai Rapor per Jalur" firstColumn="Jalur" rows={rows} />
+    </div>
+  </div>
+
+  <div>
+    <h2 class="text-2xl font-semibold sm:text-4xl">Rentang Sebaran Nilai Rapor</h2>
+    <div class="mt-6 grid gap-6 md:grid-cols-2">
+      {rows.map((r) => (
+        <RangeCard code={r.code} name={r.name} values={r.values} axis={axis} />
+      ))}
+    </div>
+  </div>
+</div>

@@ -46,56 +46,58 @@ const moreActive = MORE_NAV.some(({ href }) => isActive(href));
         ))}
       </ul>
 
-      <div class="group relative ml-4 shrink-0 sm:ml-8" data-more-wrap>
-        <button
-          id="more-menu-toggle"
-          type="button"
-          class:list={[
-            'flex items-center gap-1 text-sm decoration-2 underline-offset-8 hover:underline sm:text-2xl',
-            moreActive && 'font-bold text-brand underline decoration-brand',
-          ]}
-          aria-haspopup="true"
-          aria-expanded="false"
-          aria-controls="more-menu"
-          data-more-toggle
-          data-more-active={moreActive ? 'true' : undefined}
-        >
-          Lain-lain
-          <svg
-            class="size-4 transition-transform group-hover:rotate-180 sm:size-5"
-            data-more-chevron
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            aria-hidden="true"
+      {MORE_NAV.length > 0 && (
+        <div class="group relative ml-4 shrink-0 sm:ml-8" data-more-wrap>
+          <button
+            id="more-menu-toggle"
+            type="button"
+            class:list={[
+              'flex items-center gap-1 text-sm decoration-2 underline-offset-8 hover:underline sm:text-2xl',
+              moreActive && 'font-bold text-brand underline decoration-brand',
+            ]}
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="more-menu"
+            data-more-toggle
+            data-more-active={moreActive ? 'true' : undefined}
           >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
-        <div
-          id="more-menu"
-          class="invisible absolute left-0 top-full z-50 w-48 translate-y-1 pt-3 opacity-0 transition-all duration-150 delay-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-hover:delay-0 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:delay-0 group-[.is-open]:visible group-[.is-open]:translate-y-0 group-[.is-open]:opacity-100 group-[.is-open]:delay-0"
-        >
-          <ul class="overflow-hidden rounded-xl border border-neutral-200 bg-white text-sm shadow-xl sm:text-base">
-            {MORE_NAV.map(({ href, label }) => (
-              <li>
-                <a
-                  href={href}
-                  aria-current={isActive(href) ? 'page' : undefined}
-                  class:list={[
-                    'block px-4 py-2 text-black transition hover:bg-brand-soft',
-                    isActive(href) && 'font-bold text-brand',
-                  ]}
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
+            Lain-lain
+            <svg
+              class="size-4 transition-transform group-hover:rotate-180 sm:size-5"
+              data-more-chevron
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+          <div
+            id="more-menu"
+            class="invisible absolute left-0 top-full z-50 w-48 translate-y-1 pt-3 opacity-0 transition-all duration-150 delay-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-hover:delay-0 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:delay-0 group-[.is-open]:visible group-[.is-open]:translate-y-0 group-[.is-open]:opacity-100 group-[.is-open]:delay-0"
+          >
+            <ul class="overflow-hidden rounded-xl border border-neutral-200 bg-white text-sm shadow-xl sm:text-base">
+              {MORE_NAV.map(({ href, label }) => (
+                <li>
+                  <a
+                    href={href}
+                    aria-current={isActive(href) ? 'page' : undefined}
+                    class:list={[
+                      'block px-4 py-2 text-black transition hover:bg-brand-soft',
+                      isActive(href) && 'font-bold text-brand',
+                    ]}
+                  >
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
     </div>
 
     <a href="/" class="shrink-0" aria-label="STEI-K — beranda">

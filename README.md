@@ -1,6 +1,6 @@
 # Rise Camp · STEI-K ITB
 
-Static site for Rise Camp: study materials (Google Drive links), programs, event documentation, and QnA. Built with [Astro](https://astro.build) and Tailwind CSS 4.
+Static site for Rise Camp: study materials (Google Drive links), programs, and event documentation. Built with [Astro](https://astro.build) and Tailwind CSS 4.
 
 **Design:** team design file (shared privately, read-only). Local exports go in `design/` (gitignored).
 
@@ -28,15 +28,15 @@ All content is hard-coded in the repo — there is no CMS. Changes go live when 
 | Materi cards (Drive links) | `src/data/materi.ts` |
 | Program TKA / UTBK cards | `src/data/programs.ts` |
 | Dokumentasi events + photos | `src/data/dokumentasi.ts` (images in `public/images/`) |
-| QnA questions / answers | `src/data/qna.ts` |
-| QnA "Tambah Pertanyaan" form link | `QNA_FORM_URL` in `src/consts.ts` |
 | Nav, footer links, Instagram | `src/consts.ts` |
+| Sponsor logos + names | `src/data/sponsors.ts` (images in `src/assets/sponsors/`) |
 
 Drive links must be shared as **"Anyone with the link"** — the site only links to Drive; access is controlled by Drive itself. A malformed URL in `materi.ts` fails the build.
 
 ## Pages
 
-`/` Home · `/tentang-kami` · `/materi` · `/program` · `/program/materi` · `/dokumentasi` · `/qna`
+`/` Home · `/program` · `/program/tka` · `/program/utbk` · `/survei` · `/dokumentasi`
+
 
 ## Deployment
 
