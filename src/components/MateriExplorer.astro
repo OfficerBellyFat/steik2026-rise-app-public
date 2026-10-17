@@ -9,8 +9,17 @@ interface Props {
 
 const { subjects, placeholder = 'Cari materi' } = Astro.props;
 
+/** Label shared by the video button and its disabled placeholder. */
+const VIDEO_LABEL = 'Materi video';
+
 const searchIndex = (subject: MateriSubject) =>
-  [subject.title, ...subject.resources.map((resource) => resource.label)].join(' ').toLowerCase();
+  [
+    subject.title,
+    ...subject.resources.map((resource) => resource.label),
+    ...(subject.video ? [VIDEO_LABEL] : []),
+  ]
+    .join(' ')
+    .toLowerCase();
 ---
 
 <div data-reveal="up">
@@ -59,6 +68,30 @@ const searchIndex = (subject: MateriSubject) =>
                   <span class="text-[0.65rem] font-semibold tracking-wide uppercase">Coming soon</span>
                 </span>
               ),
+            )}
+
+            <hr class="mt-2 mb-2 h-px basis-full border-0 bg-neutral-200" />
+
+            {subject.video ? (
+              <a
+                href={subject.video.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-2 text-sm font-medium text-white transition hover:bg-brand-deep"
+              >
+                <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                {VIDEO_LABEL}
+              </a>
+            ) : (
+              <span
+                aria-disabled="true"
+                class="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-full border border-dashed border-neutral-300 px-5 py-2 text-sm font-medium text-neutral-400"
+              >
+                {VIDEO_LABEL}
+                <span class="text-[0.65rem] font-semibold tracking-wide uppercase">Coming soon</span>
+              </span>
             )}
           </div>
         </div>

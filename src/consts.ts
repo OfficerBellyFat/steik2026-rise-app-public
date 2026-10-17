@@ -7,7 +7,7 @@ export const SITE = {
 export const NAV = [
   { href: '/', label: 'Home' },
   { href: '/program', label: 'Program Kami' },
-  { href: '/survei', label: 'Survei SNBT' },
+  { href: '/survei', label: 'Survei Jalur Masuk' },
   { href: '/dokumentasi', label: 'Dokumentasi' },
 ];
 

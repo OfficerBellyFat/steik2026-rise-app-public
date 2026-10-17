@@ -7,9 +7,17 @@ const resourceSchema = z.object({
   href: z.url().optional(),
 });
 
+const videoSchema = z.object({
+  // Google Drive folder holding the recorded walkthrough for this subject.
+  href: z.url(),
+});
+
 const subjectSchema = z.object({
   title: z.string(),
   resources: z.array(resourceSchema),
+  // Optional while content is WIP; subjects without a recording render a
+  // disabled "Coming soon" placeholder in the same slot.
+  video: videoSchema.optional(),
 });
 
 const categorySchema = z.object({
@@ -21,6 +29,7 @@ const categorySchema = z.object({
 const materiSchema = z.array(categorySchema);
 
 export type MateriResource = z.infer<typeof resourceSchema>;
+export type MateriVideo = z.infer<typeof videoSchema>;
 export type MateriSubject = z.infer<typeof subjectSchema>;
 export type MateriCategory = z.infer<typeof categorySchema>;
 
@@ -37,6 +46,7 @@ export const MATERI_CATEGORIES = materiSchema.parse([
           { label: 'Paket soal 1', href: 'https://drive.google.com/file/d/1s8Jxw5kCFlWZLwWrdwI06hoE5WfQBatQ/view?usp=drive_link' },
           { label: 'Paket soal 2', href: 'https://drive.google.com/file/d/1G0C0U3icdFppQT58MmwnlvPyi1i4lVtl/view?usp=drive_link' },
         ],
+        video: { href: 'https://drive.google.com/drive/folders/19n0BslhkeX-jN9d-h8epxoPu76vF6SP3?usp=drive_link' },
       },
       {
         title: 'Bahasa Indonesia',
@@ -44,6 +54,7 @@ export const MATERI_CATEGORIES = materiSchema.parse([
           { label: 'Materi', href: 'https://drive.google.com/file/d/1AbR_NfWdtMZubTQKTUP_Tr2nM5SKnOqO/view?usp=drive_link' },
           { label: 'Paket soal', href: 'https://drive.google.com/file/d/1gx4qi2lMT2h00GPdiPixzbL7pgGWpv9f/view?usp=drive_link' },
         ],
+        video: { href: 'https://drive.google.com/drive/folders/1g-QWwPh3VQBlNGXd18JwOuCQnBQTOAfg?usp=drive_link' },
       },
       {
         title: 'Bahasa Inggris',
@@ -51,6 +62,7 @@ export const MATERI_CATEGORIES = materiSchema.parse([
           { label: 'Materi', href: 'https://drive.google.com/file/d/1VowysD240-3y8d-V1LKC1OKioLh9tafZ/view?usp=drive_link' },
           { label: 'Paket soal', href: 'https://drive.google.com/file/d/1edTtKmwivhgwQ70i6FUnClBn28e_JyGT/view?usp=drive_link' },
         ],
+        video: { href: 'https://drive.google.com/drive/folders/1nushu36xjv0zAF6Oq7TzZNZU6S1bV77l?usp=drive_link' },
       },
     ],
   },
@@ -65,6 +77,7 @@ export const MATERI_CATEGORIES = materiSchema.parse([
           { label: 'Paket soal 1', href: 'https://drive.google.com/file/d/1qgniSmta8coUJFXqG4Gc7lhqZER0KuyL/view?usp=drive_link' },
           { label: 'Paket soal 2', href: 'https://drive.google.com/file/d/1wSJKyZxZPWTSCkd4Jo0toQXE2m_fV9xT/view?usp=drive_link' },
         ],
+        video: { href: 'https://drive.google.com/drive/folders/1dYbl8eGQdMdycQaxqjQRLFL76UD9MfFL?usp=drive_link' },
       },
       {
         title: 'Pengetahuan dan Pemahaman Umum',
@@ -72,6 +85,7 @@ export const MATERI_CATEGORIES = materiSchema.parse([
           { label: 'Materi', href: 'https://drive.google.com/file/d/1Iscr9LlE8Oy3o88MkO_2TOd0bzOyAMw-/view?usp=drive_link' },
           { label: 'Paket soal', href: 'https://drive.google.com/file/d/19gN0YG9jFAQTxt5PZwXDvdcbwyC1p6Da/view?usp=drive_link' },
         ],
+        video: { href: 'https://drive.google.com/drive/folders/1xYj4sDdPsTuVIUz9AuUyMb_lohKdbyTG?usp=drive_link' },
       },
       {
         title: 'Pengetahuan dan Pemahaman Membaca',
@@ -79,6 +93,7 @@ export const MATERI_CATEGORIES = materiSchema.parse([
           { label: 'Materi', href: 'https://drive.google.com/file/d/1UX2xMfGDYls0FSMn_vRaJ4k3l5JJCvtX/view?usp=drive_link' },
           { label: 'Paket soal', href: 'https://drive.google.com/file/d/1MmjRTaLa5PTI-81qPQ_TBglm0m2iHs_y/view?usp=drive_link' },
         ],
+        video: { href: 'https://drive.google.com/drive/folders/1hMaDb7IVk5Y8TZD5kk8N7c2U0Y4aVGnX?usp=drive_link' },
       },
       {
         title: 'Pengetahuan Kuantitatif',
@@ -87,6 +102,7 @@ export const MATERI_CATEGORIES = materiSchema.parse([
           { label: 'Paket soal 1', href: 'https://drive.google.com/file/d/1Kfm0EZAHn4_fldgOIjCbuHfJ99TJ5ZVr/view?usp=drive_link' },
           { label: 'Paket soal 2', href: 'https://drive.google.com/file/d/1o8NTDezTscx422Qg-v9_25AflP4UFJeu/view?usp=drive_link' },
         ],
+        video: { href: 'https://drive.google.com/drive/folders/141JPO7jn1IT9ZGp5exydmmxFRyBwk3No?usp=drive_link' },
       },
       {
         title: 'Literasi Bahasa Indonesia',
@@ -94,6 +110,7 @@ export const MATERI_CATEGORIES = materiSchema.parse([
           { label: 'Materi', href: 'https://drive.google.com/file/d/1X4RQqXnhWKKVbfeFPvLDWZnXW9jam-O-/view?usp=drive_link' },
           { label: 'Paket soal', href: 'https://drive.google.com/file/d/1fWHhiVXUKgFF3rtlEyWeuGiUnpY8oijU/view?usp=drive_link' },
         ],
+        video: { href: 'https://drive.google.com/drive/folders/1RX2I_vTFVXwkXNPs6t7bUTg5z9DbFixo?usp=drive_link' },
       },
       {
         title: 'Literasi Bahasa Inggris',
@@ -101,6 +118,7 @@ export const MATERI_CATEGORIES = materiSchema.parse([
           { label: 'Materi', href: 'https://drive.google.com/file/d/1iCZ4UKU65UEKq41H1_Cc4a0NdZzCNIcr/view?usp=drive_link' },
           { label: 'Paket soal', href: 'https://drive.google.com/file/d/11qkB_Z63ooLvxRhv1ujWbI7mcZBBFxU8/view?usp=drive_link' },
         ],
+        video: { href: 'https://drive.google.com/drive/folders/1NoAfZurIe1uh7slXdmGMDYG1K43v7Jj4?usp=drive_link' },
       },
       {
         title: 'Penalaran Matematika',
@@ -109,6 +127,7 @@ export const MATERI_CATEGORIES = materiSchema.parse([
           { label: 'Paket soal 1', href: 'https://drive.google.com/file/d/1_6ey3x5xzdIfmR09hXQyU5xEvHv3joy5/view?usp=drive_link' },
           { label: 'Paket soal 2', href: 'https://drive.google.com/file/d/1laCLzVm4XHHFxSAOqzKf-2dwRAdsPYwa/view?usp=drive_link' },
         ],
+        video: { href: 'https://drive.google.com/drive/folders/1GYyTxX1If722n-D1y6PPOZSvlyhU9P3V?usp=drive_link' },
       },
     ],
   },
