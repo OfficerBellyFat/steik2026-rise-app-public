@@ -1,0 +1,620 @@
+---
+import { Image } from 'astro:assets';
+import PemiltangLayout from '../layouts/PemiltangLayout.astro';
+import logo from '../assets/pemiltang/logo-terang.png';
+import { CANDIDATES, PREVIEW_MODE, RESULTS } from '../data/pemiltang';
+
+const total = RESULTS ? Object.values(RESULTS).reduce((a, b) => a + b, 0) : 0;
+const result = (id: string) => {
+  if (!RESULTS) return { pct: '–', votes: 'Hasil belum tersedia' };
+  const v = RESULTS[id] ?? 0;
+  return { pct: `${(total ? (v / total) * 100 : 0).toFixed(2)}%`, votes: `${v} suara` };
+};
+const css = (n: number) => `${n}%`;
+---
+
+<PemiltangLayout title="Pemilihan GENESIS" description="Pemilihan GENESIS STEI-K '26.">
+  <div class="pm" data-step="login">
+    <img class="blob blob-left" src="/pemiltang/blob-left.svg" alt="" aria-hidden="true" />
+    <img class="blob blob-right" src="/pemiltang/blob-right.svg" alt="" aria-hidden="true" />
+
+    {PREVIEW_MODE && (
+      <p class="preview" role="note">
+        Mode pratinjau: PIN tidak diperiksa dan suara tidak disimpan. Halaman ini belum terhubung ke sistem pemilihan.
+      </p>
+    )}
+
+    <header class="top">
+      <a href="/" class="top-logo" aria-label="STEI-K — beranda">
+        <Image src={logo} alt="STEIK" width={200} class="logo-img" />
+      </a>
+      <nav class="top-nav" aria-label="Pemilihan">
+        <span class="muted">Panitia</span>
+        <a href="/" class="home">Home <img src="/pemiltang/external-link.svg" alt="" width="15" height="15" /></a>
+        <span class="sep" aria-hidden="true"></span>
+        <span class="year"><img src="/pemiltang/ballot.svg" alt="" width="18" height="18" />2026 PEMILIHAN GENESIS</span>
+      </nav>
+    </header>
+
+    <main class="stage">
+      <section data-panel="login" aria-labelledby="h-login">
+        <h1 id="h-login" class="sr-only" tabindex="-1">Login pemilihan GENESIS</h1>
+        <span class="login-logo"><Image src={logo} alt="STEIK" width={700} /></span>
+        <form class="login-card" id="login-form" novalidate>
+          <label class="sr-only" for="pin">PIN 6 digit</label>
+          <input
+            id="pin"
+            name="pin"
+            type="password"
+            inputmode="numeric"
+            autocomplete="off"
+            maxlength="6"
+            pattern="[0-9]{6}"
+            placeholder="Enter 6 digit pin"
+          />
+          <p class="field-error" id="pin-error" role="alert" hidden>Masukkan 6 digit angka.</p>
+          <button type="submit" class="btn btn-dark">Login <img src="/pemiltang/arrow-right.svg" alt="" width="18" height="18" /></button>
+        </form>
+      </section>
+
+      <section data-panel="pilih" aria-labelledby="h-pilih" hidden>
+        <h1 id="h-pilih" class="title" tabindex="-1">Choose your GENESIS!</h1>
+        <p class="lead">Mohon untuk pilih dengan bijak, suara Anda akan anonim dan sangat penting bagi STEI-K ‘26</p>
+        <ul class="cards">
+          {CANDIDATES.map((c) => (
+            <li>
+              <button type="button" class="card" data-choose={c.id} data-name={c.name} aria-label={`Pilih ${c.name}`}>
+                <span class="photo" style={`left:${css(c.box.left)};top:${css(c.box.top)};width:${css(c.box.width)};height:${css(c.box.height)}`}>
+                  <Image
+                    src={c.photo}
+                    alt=""
+                    width={700}
+                    style={`left:${css(c.crop.left)};top:${css(c.crop.top)};width:${css(c.crop.width)};height:${css(c.crop.height)}`}
+                  />
+                </span>
+                <span class="name">{c.name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section data-panel="tercatat" aria-labelledby="h-tercatat" hidden>
+        <h1 id="h-tercatat" class="title title-big" tabindex="-1">Suara anda tercatat!</h1>
+        <p class="lead lead-narrow">
+          Terimakasih telah berkontribusi dalam pemilihan GENESIS STEI-K ‘26. Suara anda sangat berarti bagi kami. Semoga GENESIS yang terpilih adalah yang terbaik!
+        </p>
+        <button type="button" class="btn btn-dark btn-back" data-goto="login">
+          <img src="/pemiltang/arrow-right.svg" alt="" width="22" height="22" class="flip" /> Kembali
+        </button>
+      </section>
+
+      <section data-panel="rekap" aria-labelledby="h-rekap" hidden>
+        <h1 id="h-rekap" class="title" tabindex="-1">Rekapitulasi suara</h1>
+        <ul class="cards cards-rekap">
+          {CANDIDATES.map((c) => (
+            <li>
+              <div class="card card-static">
+                <span class="photo" style={`left:${css(c.box.left)};top:${css(c.box.top)};width:${css(c.box.width)};height:${css(c.box.height)}`}>
+                  <Image
+                    src={c.photo}
+                    alt=""
+                    width={700}
+                    style={`left:${css(c.crop.left)};top:${css(c.crop.top)};width:${css(c.crop.width)};height:${css(c.crop.height)}`}
+                  />
+                </span>
+                <span class="name">{c.name}</span>
+              </div>
+              <div class="tally">
+                <strong>{result(c.id).pct}</strong>
+                <span>{result(c.id).votes}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p>© 2026 STEI-K ‘26</p>
+      <p class="foot-links">
+        <span>Accessibility</span><span>Privacy</span><span class="sep" aria-hidden="true"></span><span class="dark">Need help?</span>
+      </p>
+    </footer>
+  </div>
+
+  <dialog id="confirm" aria-labelledby="confirm-text">
+    <p id="confirm-text">Apakah anda yakin untuk memilih pilihan anda?<br />Anda hanya bisa memilih GENESIS 1x</p>
+    <p class="chosen" id="confirm-name" aria-live="polite"></p>
+    <div class="actions">
+      <button type="button" class="btn btn-dark" id="confirm-back">
+        <img src="/pemiltang/arrow-right.svg" alt="" width="22" height="22" class="flip" /> Kembali
+      </button>
+      <button type="button" class="btn btn-light" id="confirm-yes">Saya yakin</button>
+    </div>
+  </dialog>
+</PemiltangLayout>
+
+<style>
+  .pm,
+  dialog {
+    --ink: #172d43;
+    --muted: #66717a;
+    --line: #dadddc;
+  }
+  .pm {
+    position: relative;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'Poppins', system-ui, sans-serif;
+    color: #000;
+    isolation: isolate;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  [hidden] {
+    display: none !important;
+  }
+
+  /* Background blobs: centres match the Figma frames (1440 × 1024). */
+  .blob {
+    position: absolute;
+    z-index: -1;
+    width: 783.6px;
+    max-width: none;
+    pointer-events: none;
+    transition: top 0.6s ease, left 0.6s ease, right 0.6s ease, opacity 0.6s ease;
+  }
+  .blob-left {
+    left: calc(148px - 391.8px);
+    top: calc(41% - 391.8px);
+  }
+  .blob-right {
+    right: calc(114px - 391.8px);
+    top: calc(67% - 391.8px);
+  }
+  .pm[data-step='login'] .blob-left {
+    top: calc(64% - 391.8px);
+  }
+  .pm[data-step='login'] .blob-right {
+    top: calc(36% - 391.8px);
+  }
+  .pm[data-step='tercatat'] .blob-left {
+    top: calc(35% - 391.8px);
+    left: calc(230px - 391.8px);
+  }
+  .pm[data-step='tercatat'] .blob-right {
+    top: calc(87% - 391.8px);
+    right: calc(440px - 391.8px);
+  }
+
+  .preview {
+    background: #172d43;
+    color: #fff;
+    text-align: center;
+    font-family: 'Inter Variable', system-ui, sans-serif;
+    font-size: 12px;
+    padding: 6px 16px;
+  }
+
+  /* Header */
+  .top {
+    display: flex;
+    height: 80px;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    padding: 0 clamp(16px, 6.1vw, 88px);
+    font-family: 'Inter Variable', system-ui, sans-serif;
+  }
+  .logo-img {
+    height: 56px;
+    width: auto;
+    object-fit: cover;
+  }
+  .top-logo {
+    display: block;
+    width: 99px;
+    height: 56px;
+    overflow: hidden;
+    position: relative;
+  }
+  .top-logo .logo-img {
+    position: absolute;
+    height: 294.06%;
+    width: 166.15%;
+    left: -33.33%;
+    top: -97.95%;
+    max-width: none;
+  }
+  .top-nav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    font-size: 13px;
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .home {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--ink);
+  }
+  .sep {
+    display: inline-block;
+    width: 1px;
+    height: 24px;
+    background: var(--line);
+  }
+  .year {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  @media (max-width: 640px) {
+    .top-nav .muted,
+    .top-nav .sep {
+      display: none;
+    }
+    .top-nav {
+      gap: 16px;
+    }
+    .year {
+      font-size: 10px;
+    }
+  }
+
+  /* Stage */
+  .stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+  }
+  .stage > section {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .title {
+    font-size: clamp(32px, 4vw, 56px);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .title-big {
+    margin-top: 0;
+  }
+  .lead {
+    margin-top: 24px;
+    max-width: 796px;
+    font-size: clamp(16px, 1.7vw, 24px);
+  }
+  .lead-narrow {
+    max-width: 600px;
+    margin-top: 32px;
+    font-size: clamp(16px, 1.5vw, 20px);
+  }
+  h1:focus {
+    outline: none;
+  }
+
+  /* Login */
+  .login-logo {
+    position: relative;
+    display: block;
+    width: min(336px, 80vw);
+    aspect-ratio: 336 / 189;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .login-logo :global(img) {
+    position: absolute;
+    height: 294.06%;
+    width: 166.15%;
+    left: -33.33%;
+    top: -97.95%;
+    max-width: none;
+  }
+  .login-card {
+    display: flex;
+    width: min(434px, 100%);
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    border-radius: 30px;
+    background: rgba(107, 169, 255, 0.2);
+    padding: 44px 49px 42px;
+    font-family: 'Inter Variable', system-ui, sans-serif;
+  }
+  .login-card input {
+    width: 100%;
+    height: 52px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #fff;
+    padding: 0 16px;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .login-card input::placeholder {
+    color: var(--muted);
+  }
+  .login-card input:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .field-error {
+    margin-top: -8px;
+    font-size: 12px;
+    color: #b42318;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    height: 48px;
+    border: 0;
+    border-radius: 8px;
+    padding: 0 24px;
+    font-family: 'Inter Variable', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .btn-dark {
+    background: var(--ink);
+    color: #fff;
+  }
+  .btn-light {
+    background: #dcdedd;
+    color: #000;
+  }
+  .btn-back {
+    margin-top: 40px;
+    height: 60px;
+    padding: 0 30px;
+    font-size: 17px;
+  }
+  .flip {
+    transform: scaleX(-1);
+  }
+
+  /* Candidate cards */
+  .cards {
+    display: flex;
+    margin-top: 56px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(24px, 8vw, 130px);
+  }
+  .card {
+    position: relative;
+    display: block;
+    width: min(419px, 82vw);
+    aspect-ratio: 419 / 447;
+    border: 0;
+    border-radius: 30px;
+    background: rgba(107, 169, 255, 0.2);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  button.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.25);
+  }
+  button.card:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 4px;
+  }
+  .card-static {
+    cursor: default;
+  }
+  .photo {
+    position: absolute;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .photo :global(img) {
+    position: absolute;
+    max-width: none;
+  }
+  .name {
+    position: absolute;
+    inset: auto 0 0 0;
+    font-size: clamp(30px, 3.5vw, 50px);
+    font-weight: 600;
+    line-height: 1.2;
+    color: #fff;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  }
+  .cards-rekap {
+    margin-top: 32px;
+  }
+  .tally {
+    display: flex;
+    margin: 20px auto 0;
+    width: min(419px, 82vw);
+    min-height: 117px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px;
+    background: #fff;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  }
+  .tally strong {
+    font-size: clamp(32px, 3.5vw, 50px);
+    font-weight: 600;
+    line-height: 1.1;
+    color: #26406f;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  }
+  .tally span {
+    font-size: 20px;
+    font-weight: 600;
+    color: #26406f;
+  }
+
+  /* Footer */
+  .foot {
+    display: flex;
+    margin: 0 clamp(16px, 6.1vw, 88px);
+    height: 43px;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--line);
+    font-family: 'Inter Variable', system-ui, sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .foot-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .foot-links .sep {
+    height: 12px;
+  }
+  .foot-links .dark {
+    color: var(--ink);
+  }
+
+  /* Confirm dialog */
+  dialog {
+    margin: auto;
+    width: min(480px, calc(100vw - 32px));
+    border: 0;
+    border-radius: 30px;
+    background: #fff;
+    padding: 36px 40px;
+    text-align: center;
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-size: clamp(18px, 2vw, 24px);
+    line-height: 1.4;
+  }
+  dialog::backdrop {
+    background: rgba(40, 40, 40, 0.42);
+  }
+  .chosen {
+    margin-top: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #26406f;
+  }
+  .actions {
+    display: flex;
+    margin-top: 28px;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .actions .btn {
+    height: 60px;
+    font-size: 17px;
+    padding: 0 28px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .card,
+    .blob {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.pm')!;
+  const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-panel]'));
+  const dialog = document.getElementById('confirm') as HTMLDialogElement;
+  const confirmName = document.getElementById('confirm-name')!;
+  const form = document.getElementById('login-form') as HTMLFormElement;
+  const pin = document.getElementById('pin') as HTMLInputElement;
+  const pinError = document.getElementById('pin-error')!;
+
+  // The chosen candidate lives only in memory: nothing is stored or sent from here.
+  let choice: { id: string; name: string } | null = null;
+
+  const show = (name: string) => {
+    root.dataset.step = name;
+    panels.forEach((p) => (p.hidden = p.dataset.panel !== name));
+    const heading = document.querySelector<HTMLElement>(`[data-panel="${name}"] h1`);
+    heading?.focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  };
+
+  pin.addEventListener('input', () => {
+    pin.value = pin.value.replace(/\D/g, '').slice(0, 6);
+    pinError.hidden = true;
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!/^\d{6}$/.test(pin.value)) {
+      pinError.hidden = false;
+      pin.focus();
+      return;
+    }
+    pin.value = '';
+    show('pilih');
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-choose]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      choice = { id: btn.dataset.choose!, name: btn.dataset.name! };
+      confirmName.textContent = choice.name;
+      dialog.showModal();
+    });
+  });
+
+  document.getElementById('confirm-back')!.addEventListener('click', () => {
+    dialog.close();
+    choice = null;
+  });
+  dialog.addEventListener('cancel', () => (choice = null));
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  document.getElementById('confirm-yes')!.addEventListener('click', () => {
+    // TODO: send `choice` to the voting backend here once one exists (see PREVIEW_MODE in src/data/pemiltang.ts).
+    dialog.close();
+    choice = null;
+    show('tercatat');
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-goto]').forEach((el) =>
+    el.addEventListener('click', () => show(el.dataset.goto!)),
+  );
+
+  // Results screen is not linked from the flow; open it with /pemiltang#rekap.
+  if (location.hash === '#rekap') show('rekap');
+</script>

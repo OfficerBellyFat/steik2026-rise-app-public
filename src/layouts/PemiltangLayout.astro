@@ -1,0 +1,31 @@
+---
+import '../styles/global.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource-variable/inter/wght.css';
+import { SITE } from '../consts';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = SITE.description } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE.title}` : SITE.title;
+---
+
+<!-- Standalone shell: the election pages have their own header/footer in the design, so the site Navbar/Footer are not used. -->
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="robots" content="noindex" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body class="min-h-screen bg-[#f5f3ee] antialiased">
+    <slot />
+  </body>
+</html>
