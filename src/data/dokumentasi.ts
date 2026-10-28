@@ -1,5 +1,6 @@
+import type { ImageMetadata } from 'astro';
+
 export interface Photo {
-  /** Path under public/, e.g. '/images/dokumentasi/acara-1/01.jpg'. */
   src: string;
   alt: string;
 }
@@ -12,10 +13,30 @@ export interface Acara {
   photos: Photo[];
 }
 
-//const LOREM =
-//  'lorem ipsum dolor sit amet consectetur adipiscing elit est occaecat tempor cumque voluptas aute omnis nobis quis ullamco magna distinctio aut';
+// Processed by Astro's image pipeline; `src` becomes the build-optimized URL.
+const IMAGES: Record<string, ImageMetadata> = {
+  ...import.meta.glob('/src/assets/dokumentasi/**/*.JPG', { eager: true, import: 'default' }),
+  ...import.meta.glob('/src/assets/dokumentasi/**/*.jpg', { eager: true, import: 'default' }),
+};
+
+function sortEntries(entries: [string, ImageMetadata][]) {
+  return entries.sort(([a], [b]) => a.localeCompare(b));
+}
+
+function findPhotos(prefix: string): ImageMetadata[] {
+  return sortEntries(
+    Object.entries(IMAGES).filter(([path]) => path.startsWith(`/src/assets/dokumentasi/${prefix}/`)),
+  ).map(([, img]) => img);
+}
+
+function toPhotos(altPrefix: string, images: ImageMetadata[]): Photo[] {
+  return images.map((img, i) => ({ src: img.src, alt: `${altPrefix} (${i + 1}/${images.length})` }));
+}
+
+const SMAN_15_PHOTOS = toPhotos('Dokumentasi Rise Camp di SMAN 15 Bandung', findPhotos('sman-15'));
+const PURAGABAYA_PHOTOS = toPhotos('Dokumentasi Rise Camp di SMA Puragabaya', findPhotos('puragabaya'));
 
 export const ACARA: Acara[] = [
-  { title: 'SMAN 15 Bandung', description: "Coming Soon", tagClass: 'bg-tag-blue', photos: [] },
-  { title: 'SMA Puragabaya', description: "Coming Soon", tagClass: 'bg-tag-orange', photos: [] },
+  { title: 'SMAN 15 Bandung', description: 'Coming Soon', tagClass: 'bg-tag-blue', photos: SMAN_15_PHOTOS },
+  { title: 'SMA Puragabaya', description: 'Coming Soon', tagClass: 'bg-tag-orange', photos: PURAGABAYA_PHOTOS },
 ];
